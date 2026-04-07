@@ -48,3 +48,10 @@ Thumbs.db
 *.mov
 *.wmv
 
+target/
+.idea/
+.vscode/
+*.iml
+*.log
+.env
+.DS_Store
