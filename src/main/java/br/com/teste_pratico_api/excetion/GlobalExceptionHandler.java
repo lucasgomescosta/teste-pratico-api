@@ -23,4 +23,16 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorTemplate);
     }
+
+    @ExceptionHandler(EnderecoNotFound.class)
+    public ResponseEntity<ErrorTemplate> handleEnderecoNotFound(EnderecoNotFound ex, WebRequest request) {
+        ErrorTemplate errorTemplate = new ErrorTemplate();
+        errorTemplate.setError("Endereço não encontrado.");
+        errorTemplate.setStatus(HttpStatus.NOT_FOUND.value());
+        errorTemplate.setMessage(ex.getMessage());
+        errorTemplate.setTimestamp(Instant.now());
+        errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorTemplate);
+    }
 }
