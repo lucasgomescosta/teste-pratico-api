@@ -1,4 +1,4 @@
-package br.com.teste_pratico_api.excetion;
+package br.com.teste_pratico_api.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;

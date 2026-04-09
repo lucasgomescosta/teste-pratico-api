@@ -1,4 +1,4 @@
-package br.com.teste_pratico_api.excetion;
+package br.com.teste_pratico_api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,5 +70,20 @@ public class GlobalExceptionHandler {
         errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorTemplate);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorTemplate> handleGenericException(
+            Exception ex,
+            WebRequest request
+    ) {
+        ErrorTemplate errorTemplate = new ErrorTemplate();
+        errorTemplate.setError("Erro interno do servidor, Erro interno do servidor, por favor tente novamente mais tarde.");
+        errorTemplate.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorTemplate.setMessage(ex.getMessage());
+        errorTemplate.setTimestamp(Instant.now());
+        errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorTemplate);
     }
 }

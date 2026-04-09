@@ -1,4 +1,4 @@
-package br.com.teste_pratico_api.excetion;
+package br.com.teste_pratico_api.exception;
 
 public class ClienteNotFound extends RuntimeException {
     public ClienteNotFound(String message) {super(message);}

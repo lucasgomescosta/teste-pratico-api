@@ -1,4 +1,4 @@
-package br.com.teste_pratico_api.excetion;
+package br.com.teste_pratico_api.exception;
 
 public class BusinessException extends RuntimeException {
     public BusinessException(String message) {
