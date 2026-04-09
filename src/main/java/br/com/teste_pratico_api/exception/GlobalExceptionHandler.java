@@ -1,7 +1,9 @@
 package br.com.teste_pratico_api.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
@@ -85,5 +87,20 @@ public class GlobalExceptionHandler {
         errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorTemplate);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorTemplate> handleBadCredentialsException(
+            BadCredentialsException ex,
+            HttpServletRequest request
+    ) {
+        ErrorTemplate errorTemplate = new ErrorTemplate();
+        errorTemplate.setError("Credenciais inválidas.");
+        errorTemplate.setStatus(HttpStatus.UNAUTHORIZED.value());
+        errorTemplate.setMessage("Login ou senha inválidos.");
+        errorTemplate.setTimestamp(Instant.now());
+        errorTemplate.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorTemplate);
     }
 }
