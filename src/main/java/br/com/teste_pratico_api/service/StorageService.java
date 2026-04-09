@@ -1,7 +1,7 @@
 package br.com.teste_pratico_api.service;
 
 import br.com.teste_pratico_api.config.properties.MinioProperties;
-import br.com.teste_pratico_api.excetion.StorageException;
+import br.com.teste_pratico_api.exception.StorageException;
 import io.minio.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class StorageService {
 
     public String uploadFile(MultipartFile file) {
         try {
-            garantirBucket();
+            validarArquivo(file);
 
             String objectName = gerarNomeArquivo(file);
 
@@ -43,9 +43,19 @@ public class StorageService {
         }
     }
 
+    private void validarArquivo(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new StorageException("Arquivo não informado.");
+        }
+
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new StorageException("O arquivo enviado deve ser uma imagem válida.");
+        }
+    }
+
     public String gerarLinkTemporario(String objectName) {
         try {
-            garantirBucket();
 
             return minioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
@@ -60,52 +70,13 @@ public class StorageService {
         }
     }
 
-    public void remover(String objectName) {
-        try {
-            minioClient.removeObject(
-                    RemoveObjectArgs.builder()
-                            .bucket(minioProperties.getBucket())
-                            .object(objectName)
-                            .build()
-            );
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao remover arquivo do MinIO.", e);
-        }
-    }
-
-    private void garantirBucket() throws Exception {
-        boolean exists = minioClient.bucketExists(
-                BucketExistsArgs.builder()
-                        .bucket(minioProperties.getBucket())
-                        .build()
-        );
-
-        if (!exists) {
-            minioClient.makeBucket(
-                    MakeBucketArgs.builder()
-                            .bucket(minioProperties.getBucket())
-                            .build()
-            );
-        }
-    }
-
     private String gerarNomeArquivo(MultipartFile file) {
         String extension = Optional.ofNullable(file.getOriginalFilename())
                 .filter(f -> f.contains("."))
-                .map(f -> f.substring(file.getOriginalFilename().lastIndexOf(".")))
+                .map(f -> f.substring(f.lastIndexOf(".")))
                 .orElse("");
 
         return UUID.randomUUID() + extension;
     }
 
-    private void validarImagem(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new RuntimeException("Arquivo não informado.");
-        }
-
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new RuntimeException("O arquivo enviado não é uma imagem válida.");
-        }
-    }
 }
