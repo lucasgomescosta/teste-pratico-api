@@ -13,4 +13,5 @@ public class OcorrenciaFilter {
     private String nroCpf;
     private LocalDate dtaOcorrencia;
     private String nmeCidade;
+
 }

@@ -1,6 +1,5 @@
 package br.com.teste_pratico_api.domain.dto.request;
 
-import br.com.teste_pratico_api.domain.enums.StatusOcorrencia;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,10 +7,9 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class OcorrenciaRequestDTO {
+public class OcorrenciaCadastroRequestDTO {
 
     private Long codCliente;
     private Long codEndereco;
     private LocalDateTime dtaOcorrencia;
-
 }

@@ -1,0 +1,6 @@
+package br.com.teste_pratico_api.excetion;
+
+public class StorageException extends RuntimeException {
+    public StorageException(String message) {super(message);}
+    public StorageException(String message, Throwable cause) {super(message, cause);}
+}

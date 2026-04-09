@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,6 +35,15 @@ public class Ocorrencia {
     @Column(name = "sta_ocorrencia", nullable = false, length = 20)
     private StatusOcorrencia staOcorrencia;
 
-    @OneToMany(mappedBy = "ocorrencia", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ocorrencia", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FotoOcorrencia> fotos;
+
+    public void addFoto(FotoOcorrencia foto) {
+        if (this.fotos == null) {
+            this.fotos = new ArrayList<>();
+        }
+
+        this.fotos.add(foto);
+        foto.setOcorrencia(this);
+    }
 }

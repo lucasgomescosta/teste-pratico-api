@@ -35,4 +35,40 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorTemplate);
     }
+
+    @ExceptionHandler(OcorrenciaNotFound.class)
+    public ResponseEntity<ErrorTemplate> handleOcorrenciaNotFound(OcorrenciaNotFound ex, WebRequest request) {
+        ErrorTemplate errorTemplate = new ErrorTemplate();
+        errorTemplate.setError("Ocorrência não encontrada.");
+        errorTemplate.setStatus(HttpStatus.NOT_FOUND.value());
+        errorTemplate.setMessage(ex.getMessage());
+        errorTemplate.setTimestamp(Instant.now());
+        errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorTemplate);
+    }
+
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ErrorTemplate> handleStorageException(StorageException ex, WebRequest request) {
+        ErrorTemplate errorTemplate = new ErrorTemplate();
+        errorTemplate.setError("Erro no armazenamento de arquivos");
+        errorTemplate.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        errorTemplate.setMessage(ex.getMessage());
+        errorTemplate.setTimestamp(Instant.now());
+        errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorTemplate);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorTemplate> handleBusinessException(BusinessException ex, WebRequest request) {
+        ErrorTemplate errorTemplate = new ErrorTemplate();
+        errorTemplate.setError("Regra de negócio violada");
+        errorTemplate.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorTemplate.setMessage(ex.getMessage());
+        errorTemplate.setTimestamp(Instant.now());
+        errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorTemplate);
+    }
 }
