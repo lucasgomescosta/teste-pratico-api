@@ -33,7 +33,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         errorTemplate.setStatus(HttpStatus.UNAUTHORIZED.value());
         errorTemplate.setMessage(authException.getMessage());
         errorTemplate.setTimestamp(Instant.now());
-        errorTemplate.setPath(((ServletWebRequest)request).getRequest().getRequestURI());
+        errorTemplate.setPath(request.getRequestURI());
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
