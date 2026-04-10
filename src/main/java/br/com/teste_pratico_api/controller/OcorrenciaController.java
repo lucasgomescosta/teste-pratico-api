@@ -47,7 +47,7 @@ public class OcorrenciaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "cadastro-completo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/cadastro-completo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<OcorrenciaResponseDTO> criarCadastroCompleto(
             @RequestPart("request") OcorrenciaRequestDTO request,
             @RequestPart("files") List<MultipartFile> files
@@ -64,7 +64,7 @@ public class OcorrenciaController {
         return ResponseEntity.ok(ocorrenciaService.listarOcorrencias(filter, pageable));
     }
 
-    @PatchMapping("/{id}/finalizacao")
+    @PatchMapping("/{id}/finalizar")
     public ResponseEntity<OcorrenciaResponseDTO> finalizar(@PathVariable Long id) {
         return ResponseEntity.ok(ocorrenciaService.finalizar(id));
     }

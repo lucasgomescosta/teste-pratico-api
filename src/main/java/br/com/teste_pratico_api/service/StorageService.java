@@ -66,7 +66,7 @@ public class StorageService {
                             .build()
             );
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao gerar link temporário do arquivo.", e);
+            throw new StorageException("Erro ao gerar link temporário do arquivo.", e);
         }
     }
 

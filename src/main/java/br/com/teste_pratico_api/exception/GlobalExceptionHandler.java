@@ -3,11 +3,14 @@ package br.com.teste_pratico_api.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.time.Instant;
 
@@ -102,5 +105,21 @@ public class GlobalExceptionHandler {
         errorTemplate.setPath(request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorTemplate);
+    }
+
+    @ExceptionHandler({
+            MissingServletRequestPartException.class,
+            MethodArgumentNotValidException.class,
+            HttpMessageNotReadableException.class
+    })
+    public ResponseEntity<Object> handleMissingPart(MissingServletRequestPartException ex, HttpServletRequest request) {
+        ErrorTemplate errorTemplate = new ErrorTemplate();
+        errorTemplate.setError("Requisição inválida");
+        errorTemplate.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorTemplate.setMessage(ex.getMessage());
+        errorTemplate.setTimestamp(Instant.now());
+        errorTemplate.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorTemplate);
     }
 }
