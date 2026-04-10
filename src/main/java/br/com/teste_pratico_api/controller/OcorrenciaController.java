@@ -6,6 +6,8 @@ import br.com.teste_pratico_api.domain.dto.response.OcorrenciaListResponseDTO;
 import br.com.teste_pratico_api.domain.dto.response.OcorrenciaResponseDTO;
 import br.com.teste_pratico_api.repository.filter.OcorrenciaFilter;
 import br.com.teste_pratico_api.service.OcorrenciaService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,7 @@ import java.util.List;
 public class OcorrenciaController {
 
     private final OcorrenciaService ocorrenciaService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping
     public ResponseEntity<OcorrenciaResponseDTO> criar(@RequestBody OcorrenciaRequestDTO request) {
@@ -49,9 +52,11 @@ public class OcorrenciaController {
 
     @PostMapping(value = "/cadastro-completo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<OcorrenciaResponseDTO> criarCadastroCompleto(
-            @RequestPart("request") OcorrenciaRequestDTO request,
+            @RequestPart("request") String requestJson,
             @RequestPart("files") List<MultipartFile> files
-    ) {
+    ) throws Exception {
+        OcorrenciaRequestDTO request = objectMapper.readValue(requestJson, OcorrenciaRequestDTO.class);
+
         OcorrenciaResponseDTO response = ocorrenciaService.cadastroCompleto(request, files);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
