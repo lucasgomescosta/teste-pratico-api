@@ -297,9 +297,6 @@ Possível evolução:
 ## ⚠️ Não implementado (por priorização)
 
 * Testes de integração com banco real (Testcontainers)
-* Paginação avançada com múltiplos critérios combinados
-* Logs estruturados (ex: ELK)
-* Rate limit / proteção contra abuso
 * Monitoramento (Actuator + métricas)
 
 ---
@@ -325,6 +322,9 @@ Projeto desenvolvido com foco em:
 * organização de código
 * testabilidade
 * clareza de arquitetura
+* Clean Code
+* Escalabilidade
+* Legibilidade
 
 ---
 
