@@ -1,45 +1,331 @@
-**Edit a file, create a new file, and clone from Bitbucket in under 2 minutes**
+# 🚀 Teste Prático API - Gestão de Ocorrências
 
-When you're done, you can delete the content in this README and update the file with details for others getting started with your repository.
-
-*We recommend that you open this README in another tab as you perform the tasks below. You can [watch our video](https://youtu.be/0ocf7u76WSo) for a full demo of all the steps in this tutorial. Open the video in a new tab to avoid leaving Bitbucket.*
+API REST desenvolvida com **Spring Boot** para gerenciamento de ocorrências, incluindo cadastro, consulta, upload de evidências (MinIO) e autenticação via JWT.
 
 ---
 
-## Edit a file
+# 📌 📦 Tecnologias Utilizadas
 
-You’ll start by editing this README file to learn how to edit a file in Bitbucket.
-
-1. Click **Source** on the left side.
-2. Click the README.md link from the list of files.
-3. Click the **Edit** button.
-4. Delete the following text: *Delete this line to make a change to the README from Bitbucket.*
-5. After making your change, click **Commit** and then **Commit** again in the dialog. The commit page will open and you’ll see the change you just made.
-6. Go back to the **Source** page.
-
----
-
-## Create a file
-
-Next, you’ll add a new file to this repository.
-
-1. Click the **New file** button at the top of the **Source** page.
-2. Give the file a filename of **contributors.txt**.
-3. Enter your name in the empty file space.
-4. Click **Commit** and then **Commit** again in the dialog.
-5. Go back to the **Source** page.
-
-Before you move on, go ahead and explore the repository. You've already seen the **Source** page, but check out the **Commits**, **Branches**, and **Settings** pages.
+* Java 17
+* Spring Boot
+* Spring Data JPA
+* Spring Security + JWT
+* PostgreSQL
+* Flyway (migrations)
+* MinIO (armazenamento de arquivos)
+* JUnit 5 + Mockito (testes)
+* ModelMapper
 
 ---
 
-## Clone a repository
+# ⚙️ 🚀 Como Executar o Projeto
 
-Use these steps to clone from SourceTree, our client for using the repository command-line free. Cloning allows you to work on your files locally. If you don't yet have SourceTree, [download and install first](https://www.sourcetreeapp.com/). If you prefer to clone from the command line, see [Clone a repository](https://confluence.atlassian.com/x/4whODQ).
+## 🔧 Pré-requisitos
 
-1. You’ll see the clone button under the **Source** heading. Click that button.
-2. Now click **Check out in SourceTree**. You may need to create a SourceTree account or log in.
-3. When you see the **Clone New** dialog in SourceTree, update the destination path and name if you’d like to and then click **Clone**.
-4. Open the directory you just created to see your repository’s files.
+* Java 17+
+* Maven
+* Docker (recomendado)
 
-Now that you're more familiar with your Bitbucket repository, go ahead and add a new file locally. You can [push your change back to Bitbucket with SourceTree](https://confluence.atlassian.com/x/iqyBMg), or you can [add, commit,](https://confluence.atlassian.com/x/8QhODQ) and [push from the command line](https://confluence.atlassian.com/x/NQ0zDQ).
+---
+
+## 🐳 Subindo com Docker
+
+```bash
+docker-compose up -d
+```
+
+Serviços disponíveis:
+
+| Serviço    | URL                   |
+| ---------- | --------------------- |
+| API        | http://localhost:8080 |
+| MinIO      | http://localhost:9001 |
+| PostgreSQL | localhost:5432        |
+
+**MinIO**
+
+* usuário: `minioadmin`
+* senha: `minioadmin`
+
+---
+
+## ▶️ Rodando manualmente
+
+```bash
+mvn clean install
+mvn spring-boot:run
+```
+
+---
+
+# 🔐 Autenticação
+
+A API utiliza JWT.
+
+## Login
+
+**POST** `/api/v1/auth/login`
+
+### Entrada
+
+```json
+{
+  "login": "admin",
+  "senha": "admin123"
+}
+```
+
+### Saída
+
+```json
+{
+  "token": "jwt-token",
+  "tipo": "Bearer",
+  "expiraEm": 1800
+}
+```
+
+### Uso
+
+Enviar no header:
+
+```
+Authorization: Bearer {token}
+```
+
+---
+
+# 🔌 Endpoints
+
+## 👤 Cliente
+
+### POST `/api/v1/clientes`
+
+Cria cliente
+
+### GET `/api/v1/clientes`
+
+Lista com paginação e filtros
+
+### GET `/api/v1/clientes/{id}`
+
+Busca por ID
+
+### PUT `/api/v1/clientes/{id}`
+
+Atualiza cliente
+
+### DELETE `/api/v1/clientes/{id}`
+
+Remove cliente
+
+---
+
+## 📍 Endereço
+
+### POST `/api/v1/enderecos`
+
+Cria endereço
+
+### GET `/api/v1/enderecos`
+
+Lista endereços com paginação e filtros
+
+### GET `/api/v1/enderecos/{id}`
+
+Busca por ID
+
+### PUT `/api/v1/enderecos/{id}`
+
+Atualiza endereço
+
+### DELETE `/api/v1/enderecos/{id}`
+
+Remove endereço
+
+---
+
+## 🚨 Ocorrência
+
+### POST `/api/v1/ocorrencias`
+
+Criação simples
+
+---
+
+### POST `/api/v1/ocorrencias/cadastro-completo`
+
+Cadastro com evidências
+
+**multipart/form-data**
+
+* `request` → JSON
+* `files` → imagens
+
+---
+
+### POST `/api/v1/ocorrencias/{id}/evidencias`
+
+Upload de evidências
+
+---
+
+### GET `/api/v1/ocorrencias`
+
+Lista com filtros:
+
+* nome do cliente
+* CPF
+* data
+* cidade
+
+Ordenação:
+
+* data
+* cidade
+
+---
+
+### GET `/api/v1/ocorrencias/{id}`
+
+Busca por ID
+
+---
+
+### PATCH `/api/v1/ocorrencias/{id}/finalizar`
+
+Finaliza ocorrência
+
+⚠️ Após finalizada, não pode ser alterada
+
+---
+
+# ⚠️ Tratamento de Erros
+
+## Estrutura padrão
+
+```json
+{
+  "timestamp": "2026-04-10T14:00:00Z",
+  "status": 400,
+  "error": "Erro na requisição",
+  "message": "Descrição do erro",
+  "path": "/endpoint"
+}
+```
+
+## Principais erros
+
+| Código | Descrição                |
+| ------ | ------------------------ |
+| 400    | Dados inválidos          |
+| 401    | Não autenticado          |
+| 403    | Sem permissão            |
+| 404    | Recurso não encontrado   |
+| 409    | Regra de negócio violada |
+| 500    | Erro interno             |
+
+---
+
+# 🧪 Testes
+
+Executar:
+
+```bash
+mvn test
+```
+
+## Cobertura implementada
+
+* Controllers (MockMvc)
+* Service (regras de negócio)
+* Security (JWT)
+* Upload de arquivos (mockado)
+
+---
+
+# 🏗️ Arquitetura
+
+O projeto segue uma arquitetura em camadas:
+
+```
+controller → service → repository → database
+```
+
+Separação clara de responsabilidades:
+
+* Controller → entrada HTTP
+* Service → regras de negócio
+* Repository → acesso a dados
+* DTOs → comunicação externa
+* Mapper → transformação de dados
+
+---
+
+# ⚡ Escalabilidade
+
+A solução foi pensada para escalar:
+
+* uso de **JWT stateless**
+* armazenamento externo de arquivos (MinIO)
+* separação de camadas
+* uso de paginação e filtros
+* banco relacional com índices
+* Flyway para versionamento
+
+Possível evolução:
+
+* cache (Redis)
+* mensageria (RabbitMQ/Kafka)
+
+---
+
+# 📌 Decisões e Priorização
+
+## ✔ Implementado
+
+* CRUD completo (Cliente, Endereço, Ocorrência)
+* Upload de evidências (MinIO)
+* Endpoint de cadastro completo
+* Filtros e ordenação
+* Autenticação JWT
+* Testes unitários e de controller
+* Tratamento global de exceções
+
+---
+
+## ⚠️ Não implementado (por priorização)
+
+* Testes de integração com banco real (Testcontainers)
+* Paginação avançada com múltiplos critérios combinados
+* Logs estruturados (ex: ELK)
+* Rate limit / proteção contra abuso
+* Monitoramento (Actuator + métricas)
+
+---
+
+## 🎯 Motivo da priorização
+
+Foi priorizado:
+
+1. **Regras de negócio principais**
+2. **Funcionalidades obrigatórias**
+3. **Qualidade do código e testes**
+4. **Arquitetura limpa e organizada**
+
+Itens não implementados foram considerados melhorias futuras e não essenciais para o funcionamento principal da aplicação.
+
+---
+
+# 📬 Considerações finais
+
+Projeto desenvolvido com foco em:
+
+* boas práticas
+* organização de código
+* testabilidade
+* clareza de arquitetura
+
+---
+
+💡 Projeto pronto para evolução em ambiente real.
