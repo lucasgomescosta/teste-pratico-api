@@ -18,7 +18,9 @@ import br.com.teste_pratico_api.util.MapperCustom;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +28,13 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.MessageDigest;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class OcorrenciaService {
+
+    private static final Set<String> CAMPOS_ORDENACAO_PERMITIDOS = Set.of("dtaOcorrencia", "nmeCidade");
 
     private final OcorrenciaRepository ocorrenciaRepository;
     private final ClienteRepository clienteRepository;
@@ -38,6 +43,23 @@ public class OcorrenciaService {
     private final ModelMapper modelMapper;
     private final FotoOcorrenciaRepository fotoOcorrenciaRepository;
     private final MapperCustom mapperCustom;
+
+    private Pageable aplicarOrdenacaoSegura(Pageable pageable) {
+        List<Sort.Order> orders = pageable.getSort()
+                .stream()
+                .filter(order -> CAMPOS_ORDENACAO_PERMITIDOS.contains(order.getProperty()))
+                .toList();
+
+        if (orders.isEmpty()) {
+            orders = List.of(Sort.Order.desc("dtaOcorrencia"));
+        }
+
+        return PageRequest.of(
+                pageable.getPageNumber(),
+                pageable.getPageSize(),
+                Sort.by(orders)
+        );
+    }
 
     public OcorrenciaResponseDTO criar(OcorrenciaRequestDTO request) {
         Cliente cliente = obterClientePorId(request.getCodCliente());
@@ -171,7 +193,9 @@ public class OcorrenciaService {
     }
 
     public Page<OcorrenciaListResponseDTO> listarOcorrencias(OcorrenciaFilter filter, Pageable pageable) {
-        return ocorrenciaRepository.pesquisar(filter, pageable)
+        Pageable pageableSeguro = aplicarOrdenacaoSegura(pageable);
+
+        return ocorrenciaRepository.pesquisar(filter, pageableSeguro)
                     .map(mapperCustom::toListResponseDTO);
     }
 
