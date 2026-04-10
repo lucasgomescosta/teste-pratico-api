@@ -141,7 +141,23 @@ public class OcorrenciaService {
 
         salvarFotos(ocorrencia, files);
 
-        return modelMapper.map(ocorrencia, OcorrenciaResponseDTO.class);
+        return toResponseDTO(ocorrencia);
+    }
+
+    private OcorrenciaResponseDTO toResponseDTO(Ocorrencia ocorrencia) {
+        OcorrenciaResponseDTO dto = new OcorrenciaResponseDTO();
+        dto.setCodOcorrencia(ocorrencia.getCodOcorrencia());
+        dto.setDtaOcorrencia(ocorrencia.getDtaOcorrencia());
+        dto.setStaOcorrencia(ocorrencia.getStaOcorrencia());
+
+        dto.setCodCliente(ocorrencia.getCliente().getCodCliente());
+        dto.setNmeCliente(ocorrencia.getCliente().getNmeCliente());
+
+        dto.setCodEndereco(ocorrencia.getEndereco().getCodEndereco());
+        dto.setNmeCidade(ocorrencia.getEndereco().getNmeCidade());
+        dto.setNmeEstado(ocorrencia.getEndereco().getNmeEstado());
+
+        return dto;
     }
 
     private void salvarFotos(Ocorrencia ocorrencia, List<MultipartFile> files) {
@@ -210,7 +226,8 @@ public class OcorrenciaService {
 
         ocorrencia.setStaOcorrencia(StatusOcorrencia.FINALIZADA);
         ocorrencia = ocorrenciaRepository.save(ocorrencia);
-        return modelMapper.map(ocorrencia, OcorrenciaResponseDTO.class);
+
+        return toResponseDTO(ocorrencia);
     }
 
     @Transactional
