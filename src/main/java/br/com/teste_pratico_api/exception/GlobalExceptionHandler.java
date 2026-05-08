@@ -13,6 +13,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 import java.time.Instant;
+import java.util.List;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -121,5 +122,21 @@ public class GlobalExceptionHandler {
         errorTemplate.setPath(request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorTemplate);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Object> handleValidationExceptions(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        List<ValidateError> errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> new ValidateError(error.getField(), error.getDefaultMessage()))
+                .toList();
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                "FIELD_VALIDATE_ERROR",
+                "Existem campos não preenchidos corretamente",
+                HttpStatus.BAD_REQUEST.value(),
+                errors
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
